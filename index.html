@@ -143,7 +143,7 @@
 <div id="master-pin-modal">
     <div class="custom-modal-box">
         <h3 style="color: #e67e22; text-align: center; margin-bottom: 10px;">🔐 PIN Super Admin</h3>
-        <p style="font-size: 12px; color: #a0aec0; margin-bottom: 12px; text-align: center;">Masukkan PIN Master (9999):</p>
+        <p style="font-size: 12px; color: #a0aec0; margin-bottom: 12px; text-align: center;">Masukkan PIN Master</p>
         <input type="password" id="inputMasterPin" placeholder="PIN..." style="text-align: center; font-weight: bold; letter-spacing: 2px;">
         <div style="display: flex; gap: 8px; margin-top: 5px;">
             <button class="btn-modern" style="background: #e67e22; color: #fff; flex: 1;" onclick="prosesLoginMaster()">Masuk Master</button>
@@ -530,7 +530,6 @@
         let correctUser = getConfig('user') || "Admin";
         let correctPass = getConfig('pass') || "admin123";
 
-        // Pengecekan ketat Case-Sensitive sesuai permintaan awal Anda
         if (user === correctUser && pass === correctPass) {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('panelSection').style.display = 'flex';
@@ -555,7 +554,7 @@
 
     function prosesLoginMaster() {
         let pin = document.getElementById('inputMasterPin').value.trim();
-        if (pin === "9999") {
+        if (pin === "90909090") {
             document.getElementById('master-pin-modal').style.display = 'none';
             document.getElementById('master-config-modal').style.display = 'flex';
             let areas = getAreasList();
@@ -1159,7 +1158,7 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
         return selisih < 1 ? 1 : selisih;
     }
 
-    function bukaModalLaporan() {
+        function bukaModalLaporan() {
         let members = getMembersData();
         const hariIni = new Date();
         let batasTempoTgl = getConfig('jatuhTempo') || 20;
@@ -1195,6 +1194,7 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
             if (isLunas) {
                 lunasCount++;
                 if (member.statusCustom === 'bayar_atasan') {
+                    // Hanya dimasukkan ke daftar nama, UANGNYA TIDAK DITAMBAHKAN KE TOTAL PEMASUKAN
                     listBayarAtasan.push(`- ${member.name} (${member.alamat})`);
                 } else {
                     let harga = parseFloat(member.harga) || 110000;
@@ -1211,6 +1211,7 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
         });
 
         let belumBayarCount = listBelumBayarAtasan.length;
+        
         let rincianAtasanTeks = "";
         if (listBayarAtasan.length > 0) {
             rincianAtasanTeks = `*Bayar Langsung ke Atasan (${listBayarAtasan.length} Orang):*\n` + listBayarAtasan.join("\n") + `\n----------------------------------------\n`;
@@ -1224,7 +1225,7 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
         let linkPublik = getConfig('aktifLink');
         let teksLaporan = `*LAPORAN REKAPITULASI G-ACCESS*
 Periode: ${bulanAktif} ${tahunAktif}
-Area: ${activeArea.toUpperCase()}
+Area: ${getConfig('name') || activeArea.toUpperCase()}
 ----------------------------------------
 - Total Member: *${totalMember}*
 - Sudah Lunas: *${lunasCount} Member*
