@@ -9,15 +9,9 @@
         body { background-color: #03121e; color: #ffffff; padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         
         .admin-container { 
-            width: 100%; 
-            max-width: 480px; 
-            background: linear-gradient(145deg, #041a2c, #03121e); 
-            padding: 20px 16px; 
-            border-radius: 20px; 
-            border: 1px solid rgba(38, 198, 218, 0.3); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
-            display: flex; 
-            flex-direction: column; 
+            width: 100%; max-width: 480px; background: linear-gradient(145deg, #041a2c, #03121e); 
+            padding: 20px 16px; border-radius: 20px; border: 1px solid rgba(38, 198, 218, 0.3); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; position: relative;
         }
 
         #loginSection {
@@ -53,15 +47,11 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
         .admin-sticky-search {
-            background-color: #041a2c;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            padding-top: 10px;
-            padding-bottom: 5px;
+            background-color: #041a2c; position: sticky; top: 0; z-index: 999;
+            padding-top: 10px; padding-bottom: 10px; box-shadow: 0 10px 20px rgba(4, 26, 44, 0.95);
+            border-bottom: 1px solid rgba(38, 198, 218, 0.2);
         }
 
-        /* TOMBOL FILTER ADMIN */
         .filter-tags-admin { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 8px; }
         .tag-admin {
             background: transparent; border: 1px solid rgba(255, 255, 255, 0.1); color: #a0aec0;
@@ -95,7 +85,6 @@
         .admin-footer-actions { display: flex; gap: 4px; margin-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 8px; flex-wrap: wrap; }
         .btn-card-action { padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; border: none; cursor: pointer; flex: 1; text-align: center; }
 
-        /* TOMBOL FLOATING SCROLL NAIK-TURUN (BOTTOM 200PX) */
         .scroll-floating-container {
             position: fixed; bottom: 200px; right: 20px; display: flex; flex-direction: column; gap: 8px;
             z-index: 999999; opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -109,17 +98,17 @@
         }
         .btn-scroll:hover { background: #26c6da; color: #03121e; transform: translateY(-2px) scale(1.05); }
 
-        #custom-input-modal, #preview-modal, #confirm-modal, #payment-modal { 
+        #custom-input-modal, #preview-modal, #confirm-modal, #payment-modal, #laporan-modal, #master-pin-modal, #master-config-modal, #new-area-modal { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
             background: rgba(3, 18, 30, 0.85); display: none; justify-content: center; align-items: center; 
             z-index: 999999; padding: 15px; backdrop-filter: blur(5px); 
         }
 
-        .custom-modal-box, .modal-content { 
+        .custom-modal-box, .modal-content, .admin-box-modal { 
             background: #041a2c; width: 100%; max-width: 400px; border-radius: 16px; padding: 20px; 
             border: 1px solid rgba(38, 198, 218, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
         }
-        .modal-content textarea { 
+        .modal-content textarea, #laporanText { 
             width: 100%; height: 180px; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.2); 
             border-radius: 10px; padding: 12px; font-size: 12px; font-family: monospace; resize: none; margin-bottom: 14px; outline: none; 
         }
@@ -133,12 +122,83 @@
             font-size: 13px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: transform 0.3s ease, opacity 0.3s ease; opacity: 0; z-index: 99999999; 
         }
         #toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        .stat-hide-on-scroll {
+            transition: transform 0.3s ease, opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease;
+            transform: translateY(0); opacity: 1; max-height: 120px; overflow: hidden;
+        }
+        .stat-hide-on-scroll.hidden {
+            transform: translateY(-20px); opacity: 0; max-height: 0; margin-bottom: 0 !important;
+        }
     </style>
 </head>
 <body>
 
 <div id="toast-notification">Berhasil!</div>
 
+<!-- TOMBOL RAHASIA SUPER ADMIN DI POJOK KANAN ATAS -->
+<button onclick="bukaModalPinMaster()" style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; color: rgba(255,255,255,0.2); font-size: 16px; cursor: pointer; z-index: 9999;" title="Super Admin">⚙️</button>
+
+<!-- MODAL PIN MASTER -->
+<div id="master-pin-modal">
+    <div class="custom-modal-box">
+        <h3 style="color: #e67e22; text-align: center; margin-bottom: 10px;">🔐 PIN Super Admin</h3>
+        <p style="font-size: 12px; color: #a0aec0; margin-bottom: 12px; text-align: center;">Masukkan PIN Master (9999):</p>
+        <input type="password" id="inputMasterPin" placeholder="PIN..." style="text-align: center; font-weight: bold; letter-spacing: 2px;">
+        <div style="display: flex; gap: 8px; margin-top: 5px;">
+            <button class="btn-modern" style="background: #e67e22; color: #fff; flex: 1;" onclick="prosesLoginMaster()">Masuk Master</button>
+            <button class="btn-modern" style="background: rgba(255,255,255,0.08); color: #a0aec0; flex: 1;" onclick="document.getElementById('master-pin-modal').style.display='none'">Batal</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL KONFIGURASI MASTER AREA (CLOUD) -->
+<div id="master-config-modal">
+    <div class="admin-box-modal" style="max-width: 450px;">
+        <h3 style="color: #e67e22;">⚙️ Konfigurasi Master Area (Cloud)</h3>
+        <p style="font-size: 11px; color: #a0aec0; margin-bottom: 12px; text-align: center;">Tambah atau ubah wilayah yang otomatis tersinkron ke semua perangkat.</p>
+        
+        <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+            <select id="configTargetArea" onchange="loadConfigData(this.value)" style="flex: 1; margin-bottom: 0;"></select>
+            <button class="btn-quick-shortcut" style="padding: 10px 14px; border-radius: 12px;" onclick="bukaModalTambahArea()">➕ Tambah</button>
+            <button class="btn-quick-shortcut" style="padding: 10px 14px; border-radius: 12px; border-color: rgba(231,76,60,0.4); color: #e74c3c;" onclick="hapusWilayahAktif()">🗑️ Hapus</button>
+        </div>
+
+        <div><label>Nama Tampilan Wilayah</label><input type="text" id="cfgAreaName"></div>
+        <div class="grid-2">
+            <div><label>Username Admin</label><input type="text" id="cfgUsername"></div>
+            <div><label>Password Admin</label><input type="text" id="cfgPassword"></div>
+        </div>
+        <div><label>Link Google Sheets Web App URL Area</label><input type="text" id="cfgWebUrl"></div>
+        <div class="grid-2">
+            <div><label>Jatuh Tempo (Tgl)</label><input type="number" id="cfgJatuhTempo"></div>
+            <div><label>No WA Konfirmasi</label><input type="text" id="cfgWaKonfirmasi"></div>
+        </div>
+        <div><label>Link Pembayaran Online</label><input type="text" id="cfgBayarLink"></div>
+        <div><label>Link Masa Aktif Publik</label><input type="text" id="cfgAktifLink"></div>
+
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button class="btn-modern" style="background: #2ecc71; color: #fff;" onclick="simpanMasterConfig()">💾 Simpan & Sync ke Cloud</button>
+            <button class="btn-modern" style="background: #7f8c8d; color: #fff;" onclick="document.getElementById('master-config-modal').style.display='none'">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL TAMBAH AREA BARU -->
+<div id="new-area-modal">
+    <div class="custom-modal-box">
+        <h3 style="color: #26c6da; text-align: center; margin-bottom: 10px;">➕ Tambah Wilayah Baru</h3>
+        <div><label>ID Wilayah (tanpa spasi, misal: gombang)</label><input type="text" id="newAreaKey" placeholder="gombang"></div>
+        <div><label>Nama Area</label><input type="text" id="newAreaName" placeholder="Area Gombang"></div>
+        <div><label>Link Web App Google Sheets</label><input type="text" id="newAreaWebUrl" placeholder="https://script.google.com/..."></div>
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button class="btn-modern" style="background: #2ecc71; color: #fff;" onclick="prosesSimpanAreaBaru()">Simpan</button>
+            <button class="btn-modern" style="background: rgba(255,255,255,0.08); color: #a0aec0;" onclick="document.getElementById('new-area-modal').style.display='none'">Batal</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL KONFIRMASI HAPUS MEMBER -->
 <div id="confirm-modal">
     <div class="custom-modal-box" style="text-align: center;">
         <h3 style="color: #ff6b6b; margin-bottom: 8px;">Konfirmasi Hapus</h3>
@@ -150,6 +210,7 @@
     </div>
 </div>
 
+<!-- MODAL PEMBAYARAN -->
 <div id="payment-modal">
     <div class="custom-modal-box">
         <h3 style="color: #26c6da; margin-bottom: 8px; text-align: center;">Konfirmasi Pembayaran</h3>
@@ -162,6 +223,7 @@
     </div>
 </div>
 
+<!-- MODAL INPUT WHATSAPP KUSTOM -->
 <div id="custom-input-modal">
     <div class="custom-modal-box">
         <h3 id="custom-modal-title" style="margin-bottom: 8px; color: #26c6da; text-align: center;">No WhatsApp Kosong</h3>
@@ -174,6 +236,7 @@
     </div>
 </div>
 
+<!-- MODAL PRATINJAU STRUK & RAWBT -->
 <div id="preview-modal">
     <div class="modal-content">
         <h3 id="modal-title-text" style="color: #26c6da; text-align: center; margin-bottom: 10px;">Pratinjau Pesan</h3>
@@ -190,17 +253,38 @@
     </div>
 </div>
 
+<!-- MODAL LAPORAN REKAPITULASI -->
+<div id="laporan-modal">
+    <div class="custom-modal-box" style="background: #041a2c; width: 100%; max-width: 400px; border-radius: 16px; padding: 20px; border: 1px solid rgba(38, 198, 218, 0.4);">
+        <h3 style="color: #26c6da; text-align: center; margin-bottom: 10px;">Laporan Rekapitulasi</h3>
+        <textarea id="laporanText"></textarea>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn-modern" style="background: #25D366; color: #fff; flex: 1;" onclick="kirimLaporanWa()">💬 Kirim ke WhatsApp</button>
+            <button class="btn-modern" style="background: #e74c3c; color: #fff; flex: 1;" onclick="document.getElementById('laporan-modal').style.display = 'none';">Tutup</button>
+        </div>
+    </div>
+</div>
+
 <div class="admin-container">
+    <!-- HALAMAN LOGIN -->
     <div id="loginSection">
         <h3>🔐 Login Akses Admin</h3>
-        <div style="margin-top: 15px;"><label>Username</label><input type="text" id="adminUser" placeholder="Masukkan Username..."></div>
+        <div style="margin-top: 10px;">
+            <label>Pilih Wilayah / Area</label>
+            <select id="loginAreaSelect"></select>
+        </div>
+        <div><label>Username</label><input type="text" id="adminUser" placeholder="Masukkan Username..."></div>
         <div><label>Password</label><input type="password" id="adminPass" placeholder="Masukkan Password..."></div>
         <button class="btn-modern" style="background: #26c6da; color: #041a2c;" onclick="prosesLoginAdmin()">Masuk Panel</button>
     </div>
 
+    <!-- HALAMAN PANEL KELOLA MEMBER -->
     <div id="panelSection" style="display: none; height: 100%; flex-direction: column;">
         <div class="admin-scrollable-body" id="adminScrollArea">
-            <h3 id="form-title">Kelola Member G-ACCESS</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <h3 id="form-title" style="margin-bottom:0;">Kelola Member G-ACCESS</h3>
+                <button onclick="location.reload()" style="background: transparent; border: 1px solid #e74c3c; color: #e74c3c; padding: 4px 8px; border-radius: 8px; font-size: 10px; cursor: pointer;">Ganti Area</button>
+            </div>
             
             <button id="btn-toggle-form" class="btn-modern" style="background: rgba(38, 198, 218, 0.15); border: 1px dashed #26c6da; color: #26c6da; margin-bottom: 12px;" onclick="bukaFormTambah()">➕ Buka Form Tambah Member</button>
 
@@ -235,17 +319,10 @@
                     <label>Status Override (Custom Admin)</label>
                     <select id="memberStatusCustom">
                         <option value="normal">Normal (Otomatis)</option>
+                        <option value="bayar_atasan">Bayar Langsung ke Atasan</option>
                         <option value="paksa_online">Paksa Tetap Online</option>
                         <option value="paksa_offline">Paksa Offline / Isolir</option>
                     </select>
-                </div>
-                <div>
-                    <label>Link Info Pembayaran (Untuk Struk Tagihan)</label>
-                    <input type="text" id="adminBayarLink" value="https://vpayndo.blogspot.com/p/pembayaran-tagihan.html" placeholder="https://...">
-                </div>
-                <div>
-                    <label>Link Cek Masa Aktif (Untuk Struk Lunas)</label>
-                    <input type="text" id="adminAktifLink" value="https://vpayndo.blogspot.com/p/daftar-pelanggan-internet-area-kalimojo.html" placeholder="https://...">
                 </div>
 
                 <div style="display: flex; gap: 8px;">
@@ -258,14 +335,41 @@
                 <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:18px 0 0 0;">
             </div>
 
-            <!-- KOTAK PENCARIAN & TOMBOL FILTER STATUS -->
+            <!-- KOTAK STATISTIK & PENCARIAN -->
             <div class="admin-sticky-search">
+                <div id="statBoxContainer" class="stat-hide-on-scroll" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 8px;">
+                    <div style="background: rgba(4, 26, 44, 0.9); border: 1px solid rgba(38, 198, 218, 0.3); border-radius: 8px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                        <span style="font-size: 9px; color: #a0aec0; font-weight: 600;">Total</span>
+                        <span id="statTotal" style="font-size: 13px; color: #ffffff; font-weight: bold;">0</span>
+                    </div>
+                    <div style="background: rgba(4, 26, 44, 0.9); border: 1px solid rgba(52, 152, 219, 0.3); border-radius: 8px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                        <span style="font-size: 9px; color: #3498db; font-weight: 600;">Lunas</span>
+                        <span id="statSudahBayar" style="font-size: 13px; color: #3498db; font-weight: bold;">0</span>
+                    </div>
+                    <div style="background: rgba(4, 26, 44, 0.9); border: 1px solid rgba(46, 204, 113, 0.3); border-radius: 8px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                        <span style="font-size: 9px; color: #2ecc71; font-weight: 600;">Aktif</span>
+                        <span id="statAktif" style="font-size: 13px; color: #2ecc71; font-weight: bold;">0</span>
+                    </div>
+                    <div style="background: rgba(4, 26, 44, 0.9); border: 1px solid rgba(241, 196, 15, 0.3); border-radius: 8px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                        <span style="font-size: 9px; color: #f1c40f; font-weight: 600;">Telat</span>
+                        <span id="statTelat" style="font-size: 13px; color: #f1c40f; font-weight: bold;">0</span>
+                    </div>
+                    <div style="background: rgba(4, 26, 44, 0.9); border: 1px solid rgba(231, 76, 60, 0.3); border-radius: 8px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                        <span style="font-size: 9px; color: #e74c3c; font-weight: 600;">Nonaktif</span>
+                        <span id="statNonaktif" style="font-size: 13px; color: #e74c3c; font-weight: bold;">0</span>
+                    </div>
+                </div>
+
                 <div class="filter-tags-admin" id="adminFilterTags">
                     <button class="tag-admin active" onclick="filterAdminStatus('semua', event)">Semua</button>
-                    <button class="tag-admin" onclick="filterAdminStatus('aktif', event)">Aktif</button>
+                    <button class="tag-admin" onclick="filterAdminStatus('belum_bayar', event)">Belum Bayar</button>
+                    <button class="tag-admin" onclick="filterAdminStatus('sudah_bayar', event)">Sudah Bayar</button>
                     <button class="tag-admin" onclick="filterAdminStatus('telat', event)">Telat Bayar</button>
                     <button class="tag-admin" onclick="filterAdminStatus('nonaktif', event)">Nonaktif</button>
                 </div>
+
+                <button class="btn-modern" style="background: #e67e22; color: #fff; margin-bottom: 8px;" onclick="bukaModalLaporan()">📊 Rekap Laporan Bulan Ini</button>
+
                 <div style="display: flex; gap: 8px;">
                     <input type="text" id="adminSearch" placeholder="🔍 Cari Nama / Alamat..." onkeypress="handleAdminSearch(event)" style="margin-bottom: 0; flex: 1;">
                     <button class="btn-quick-shortcut" onclick="renderAdminTable()" style="padding: 0 16px; border-radius: 12px; font-size: 13px;">Cari</button>
@@ -277,17 +381,117 @@
     </div>
 </div>
 
-<!-- TOMBOL FLOATING SCROLL NAIK-TURUN (BOTTOM 200PX) -->
+<!-- FLOATING SCROLL -->
 <div class="scroll-floating-container" id="scrollFloatingBtn">
     <button class="btn-scroll" onclick="document.getElementById('adminScrollArea').scrollTo({top: 0, behavior: 'smooth'})" title="Gulir ke Atas">▲</button>
     <button class="btn-scroll" onclick="document.getElementById('adminScrollArea').scrollTo({top: document.getElementById('adminScrollArea').scrollHeight, behavior: 'smooth'})" title="Gulir ke Bawah">▼</button>
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxX8MY0T2QOKoOCvxLrjKN77gLIgGLjfIb2jKCaTiMmx-tJLo7ASdD9sgQ2vnDGohXS/exec";
-    const defaultMembers = [{ id: "MB", name: "Member Baru", paket: "Reguler", harga: 110000, wa: "", alamat: "Pager Sengon KaliMojo", bulanTagihan: 8, tahunTagihan: 2026, statusCustom: "normal" }];
+    // URL GOOGLE SHEETS MASTER PUSAT UNTUK SINKRONISASI DAFTAR AREA (CLOUD)
+    const MASTER_REGISTRY_URL = "https://script.google.com/macros/s/AKfycbxSstNBsjk3cl4fPKtUGYRFcsRO7TS1u-wY4ZpaqRqsunFaHtPzX5HfofS6LAYUWQMf/exec";
+
+    let defaultAreas = {
+        kalimojo: {
+            name: "Area Kalimojo",
+            webUrl: "https://script.google.com/macros/s/AKfycbxX8MY0T2QOKoOCvxLrjKN77gLIgGLjfIb2jKCaTiMmx-tJLo7ASdD9sgQ2vnDGohXS/exec",
+            jatuhTempo: 20, waKonfirmasi: "083845002120",
+            bayarLink: "https://bayar-jegegnet-online.netlify.app/",
+            aktifLink: "https://jegegnet-masaaktif-kalimojo.netlify.app/",
+            user: "Admin", pass: "admin123"
+        },
+        kalitengah: {
+            name: "Area Kalitengah",
+            webUrl: "https://script.google.com/macros/s/AKfycbzn4CrM9ron7MMkN_BAnKbWYqnKYNAqpRqt4sariwiDGZGrxHcc4LEoZxwCVLwB4qBKvg/exec",
+            jatuhTempo: 23, waKonfirmasi: "087882099296",
+            bayarLink: "https://bayar-gaccess-online.netlify.app/",
+            aktifLink: "https://gaccess-masaaktif-xt.netlify.app/",
+            user: "admin", pass: "admin123"
+        }
+    };
+
+    let activeArea = "";
     let globalActiveWa = "", globalActiveIndex = -1, deleteTargetIndex = -1, activePaymentIndex = -1;
     let currentAdminFilter = 'semua';
+
+    function getAreasList() {
+        let saved = localStorage.getItem('master_areas_registry_cloud');
+        return saved ? JSON.parse(saved) : defaultAreas;
+    }
+
+    function saveAreasListToCloud(areasObj) {
+        localStorage.setItem('master_areas_registry_cloud', JSON.stringify(areasObj));
+        if (MASTER_REGISTRY_URL && MASTER_REGISTRY_URL.startsWith("http")) {
+            let dataArray = Object.keys(areasObj).map(k => ({
+                id: k, name: areasObj[k].name, webUrl: areasObj[k].webUrl,
+                jatuhTempo: areasObj[k].jatuhTempo, waKonfirmasi: areasObj[k].waKonfirmasi,
+                bayarLink: areasObj[k].bayarLink, aktifLink: areasObj[k].aktifLink,
+                user: areasObj[k].user, pass: areasObj[k].pass
+            }));
+            fetch(MASTER_REGISTRY_URL, {
+                method: "POST", mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(dataArray)
+            }).catch(err => console.error("Gagal sync master ke cloud:", err));
+        }
+    }
+
+    function fetchAreasFromCloud() {
+        if (!MASTER_REGISTRY_URL || !MASTER_REGISTRY_URL.startsWith("http")) {
+            initAreaDropdowns();
+            return;
+        }
+        fetch(MASTER_REGISTRY_URL)
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    let cloudAreas = {};
+                    data.forEach(item => {
+                        let k = item.id || item.ID;
+                        if (k) {
+                            cloudAreas[k] = {
+                                name: item.name || item.Name || "Area",
+                                webUrl: item.webUrl || item.WebUrl || "",
+                                jatuhTempo: parseInt(item.jatuhTempo || item.JatuhTempo) || 20,
+                                waKonfirmasi: item.waKonfirmasi || item.WaKonfirmasi || "",
+                                bayarLink: item.bayarLink || item.BayarLink || "",
+                                aktifLink: item.aktifLink || item.AktifLink || "",
+                                user: item.user || item.User || "Admin",
+                                pass: item.pass || item.Pass || "admin123"
+                            };
+                        }
+                    });
+                    localStorage.setItem('master_areas_registry_cloud', JSON.stringify(cloudAreas));
+                }
+                initAreaDropdowns();
+            })
+            .catch(err => {
+                initAreaDropdowns();
+            });
+    }
+
+    function initAreaDropdowns() {
+        let areas = getAreasList();
+        let selLogin = document.getElementById('loginAreaSelect');
+        let selConfig = document.getElementById('configTargetArea');
+        
+        let htmlOpts = `<option value="" disabled selected>-- Pilih Wilayah Anda --</option>`;
+        for (let key in areas) {
+            htmlOpts += `<option value="${key}">${areas[key].name}</option>`;
+        }
+        if(selLogin) selLogin.innerHTML = htmlOpts;
+        if(selConfig) selConfig.innerHTML = htmlOpts;
+    }
+
+    window.onload = function() {
+        fetchAreasFromCloud();
+    };
+
+    function getConfig(key) {
+        let areas = getAreasList();
+        let areaData = areas[activeArea] || defaultAreas['kalimojo'];
+        return areaData ? areaData[key] : '';
+    }
 
     function showToast(msg) {
         let t = document.getElementById('toast-notification');
@@ -296,15 +500,38 @@
     }
 
     function getMembersData() {
-        let stored = localStorage.getItem('jegeg_json_kalimojo');
-        if (!stored) { localStorage.setItem('jegeg_json_kalimojo', JSON.stringify(defaultMembers)); stored = JSON.stringify(defaultMembers); }
+        if (!activeArea) return [];
+        let storageKey = `members_data_${activeArea}`;
+        let stored = localStorage.getItem(storageKey);
+        if (!stored) {
+            let defaultMembers = [{ id: "MB", name: "Member Baru", paket: "Reguler", harga: 110000, wa: "", alamat: "Area Utama", bulanTagihan: 8, tahunTagihan: 2026, statusCustom: "normal" }];
+            localStorage.setItem(storageKey, JSON.stringify(defaultMembers));
+            stored = JSON.stringify(defaultMembers);
+        }
         return JSON.parse(stored);
     }
 
+    function saveMembersData(data) {
+        if (!activeArea) return;
+        localStorage.setItem(`members_data_${activeArea}`, JSON.stringify(data));
+    }
+
     function prosesLoginAdmin() {
+        let areaSelect = document.getElementById('loginAreaSelect').value;
+        if (!areaSelect) {
+            showToast("⚠️ Silakan pilih wilayah terlebih dahulu!");
+            return;
+        }
+        activeArea = areaSelect;
+
         let user = document.getElementById('adminUser').value.trim();
         let pass = document.getElementById('adminPass').value.trim();
-        if (user === "Admin" && pass === "admin123") {
+        
+        let correctUser = getConfig('user') || "Admin";
+        let correctPass = getConfig('pass') || "admin123";
+
+        // Pengecekan ketat Case-Sensitive sesuai permintaan awal Anda
+        if (user === correctUser && pass === correctPass) {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('panelSection').style.display = 'flex';
             
@@ -316,6 +543,100 @@
             showToast("✨ Login Admin Berhasil!");
         } else { 
             showToast("⚠️ Username atau Password salah!"); 
+        }
+    }
+
+    // --- MENU SUPER ADMIN TERSEMBUNYI (⚙️) ---
+    function bukaModalPinMaster() {
+        document.getElementById('inputMasterPin').value = "";
+        document.getElementById('master-pin-modal').style.display = 'flex';
+        setTimeout(() => document.getElementById('inputMasterPin').focus(), 100);
+    }
+
+    function prosesLoginMaster() {
+        let pin = document.getElementById('inputMasterPin').value.trim();
+        if (pin === "9999") {
+            document.getElementById('master-pin-modal').style.display = 'none';
+            document.getElementById('master-config-modal').style.display = 'flex';
+            let areas = getAreasList();
+            let firstKey = Object.keys(areas)[0];
+            document.getElementById('configTargetArea').value = firstKey;
+            loadConfigData(firstKey);
+            showToast("⚙️ Masuk Menu Master Admin!");
+        } else {
+            showToast("⚠️ PIN Master Salah!");
+        }
+    }
+
+    function loadConfigData(areaKey) {
+        let areas = getAreasList();
+        let cfg = areas[areaKey];
+        if (!cfg) return;
+        document.getElementById('cfgAreaName').value = cfg.name || "";
+        document.getElementById('cfgUsername').value = cfg.user || "Admin";
+        document.getElementById('cfgPassword').value = cfg.pass || "admin123";
+        document.getElementById('cfgWebUrl').value = cfg.webUrl || "";
+        document.getElementById('cfgJatuhTempo').value = cfg.jatuhTempo || 20;
+        document.getElementById('cfgWaKonfirmasi').value = cfg.waKonfirmasi || "";
+        document.getElementById('cfgBayarLink').value = cfg.bayarLink || "";
+        document.getElementById('cfgAktifLink').value = cfg.aktifLink || "";
+    }
+
+    function simpanMasterConfig() {
+        let areaKey = document.getElementById('configTargetArea').value;
+        let areas = getAreasList();
+        if (areas[areaKey]) {
+            areas[areaKey].name = document.getElementById('cfgAreaName').value.trim();
+            areas[areaKey].user = document.getElementById('cfgUsername').value.trim() || "Admin";
+            areas[areaKey].pass = document.getElementById('cfgPassword').value.trim() || "admin123";
+            areas[areaKey].webUrl = document.getElementById('cfgWebUrl').value.trim();
+            areas[areaKey].jatuhTempo = parseInt(document.getElementById('cfgJatuhTempo').value) || 20;
+            areas[areaKey].waKonfirmasi = document.getElementById('cfgWaKonfirmasi').value.trim();
+            areas[areaKey].bayarLink = document.getElementById('cfgBayarLink').value.trim();
+            areas[areaKey].aktifLink = document.getElementById('cfgAktifLink').value.trim();
+
+            saveAreasListToCloud(areas);
+            initAreaDropdowns();
+            document.getElementById('configTargetArea').value = areaKey;
+            showToast("✅ Konfigurasi Disimpan & Disinkronkan ke Cloud!");
+        }
+    }
+
+    function bukaModalTambahArea() {
+        document.getElementById('newAreaKey').value = "";
+        document.getElementById('newAreaName').value = "";
+        document.getElementById('newAreaWebUrl').value = "";
+        document.getElementById('new-area-modal').style.display = 'flex';
+    }
+
+    function prosesSimpanAreaBaru() {
+        let key = document.getElementById('newAreaKey').value.trim().toLowerCase().replace(/\s+/g, '');
+        let name = document.getElementById('newAreaName').value.trim();
+        let webUrl = document.getElementById('newAreaWebUrl').value.trim();
+        if (!key || !name) { showToast("⚠️ ID dan Nama Wilayah wajib diisi!"); return; }
+
+        let areas = getAreasList();
+        areas[key] = {
+            name: name, webUrl: webUrl, jatuhTempo: 20, waKonfirmasi: "083845002120",
+            bayarLink: "https://bayar-jegegnet-online.netlify.app/",
+            aktifLink: "", user: "Admin", pass: "admin123"
+        };
+        saveAreasListToCloud(areas);
+        document.getElementById('new-area-modal').style.display = 'none';
+        initAreaDropdowns();
+        showToast("🎉 Wilayah Baru Berhasil Ditambahkan ke Cloud!");
+    }
+
+    function hapusWilayahAktif() {
+        let areaKey = document.getElementById('configTargetArea').value;
+        let areas = getAreasList();
+        if (Object.keys(areas).length <= 1) { showToast("⚠️ Minimal harus tersisa 1 wilayah!"); return; }
+        if (confirm(`Yakin ingin menghapus wilayah ${areas[areaKey].name}?`)) {
+            delete areas[areaKey];
+            saveAreasListToCloud(areas);
+            localStorage.removeItem('members_data_' + areaKey);
+            initAreaDropdowns();
+            showToast("🗑️ Wilayah berhasil dihapus!");
         }
     }
 
@@ -339,41 +660,104 @@
         let members = getMembersData();
         let container = document.getElementById('admin-member-list');
         let search = document.getElementById('adminSearch').value.toLowerCase().trim();
+        let batasTempoTgl = getConfig('jatuhTempo') || 20;
         
         const hariIni = new Date();
 
+        let countTotal = members.length;
+        let countSudahBayar = 0;
+        let countAktif = 0;
+        let countTelat = 0;
+        let countNonaktif = 0;
+
+        members.forEach(m => {
+            const mB = parseInt(m.bulanTagihan) || 8;
+            const mT = parseInt(m.tahunTagihan) || 2026;
+            const tglJatuhTempo = new Date(mT, mB - 1, batasTempoTgl);
+            let sHari = Math.ceil((tglJatuhTempo - hariIni) / (1000 * 60 * 60 * 24));
+
+            let st = 'aktif';
+            if (sHari < 0) {
+                if (Math.abs(sHari) <= 30) { st = 'telat'; } 
+                else { st = 'nonaktif'; }
+            }
+
+            if (m.statusCustom === 'paksa_online') {
+                st = 'telat';
+            } else if (m.statusCustom === 'paksa_offline') {
+                st = 'nonaktif';
+            }
+
+            let totalBulanTagihan = (mT * 12) + mB;
+            let totalBulanSekarang = (hariIni.getFullYear() * 12) + (hariIni.getMonth() + 1);
+            let isLunas = (totalBulanTagihan > totalBulanSekarang && m.statusCustom !== 'paksa_online') || (m.statusCustom === 'bayar_atasan');
+
+            if (isLunas) countSudahBayar++;
+            if (isLunas) countAktif++;
+            else if (st === 'nonaktif') countNonaktif++;
+            else if (st === 'telat' || m.statusCustom === 'paksa_online') countTelat++;
+            else countAktif++;
+        });
+
+        document.getElementById('statTotal').innerText = countTotal;
+        document.getElementById('statSudahBayar').innerText = countSudahBayar;
+        document.getElementById('statAktif').innerText = countAktif;
+        document.getElementById('statTelat').innerText = countTelat;
+        document.getElementById('statNonaktif').innerText = countNonaktif;
+
         container.innerHTML = '';
-        members.forEach((member, index) => {
+        
+        let displayedMembers = members.map((member, originalIndex) => ({ ...member, originalIndex }));
+        
+        displayedMembers.sort((a, b) => {
+            let alamatA = (a.alamat || "").toLowerCase();
+            let alamatB = (b.alamat || "").toLowerCase();
+            return alamatA.localeCompare(alamatB, 'id', { numeric: true });
+        });
+
+        displayedMembers.forEach((member) => {
+            const index = member.originalIndex;
             const mBulan = parseInt(member.bulanTagihan) || 8;
             const mTahun = parseInt(member.tahunTagihan) || 2026;
             
-            const tanggalJatuhTempo = new Date(mTahun, mBulan - 1, 20);
+            const tanggalJatuhTempo = new Date(mTahun, mBulan - 1, batasTempoTgl);
             const selisihWaktu = tanggalJatuhTempo - hariIni;
             const selisihHari = Math.ceil(selisihWaktu / (1000 * 60 * 60 * 24));
 
             let status = 'aktif', labelHari = `${selisihHari} Hari Lagi`;
             
-            if (selisihHari < 0) {
-                if (Math.abs(selisihHari) <= 30) {
-                    status = 'telat'; labelHari = `Telat ${Math.abs(selisihHari)} Hari`;
-                } else {
-                    status = 'nonaktif'; labelHari = 'Blokir (Isolir)';
-                }
-            }
-
             if (member.statusCustom === 'paksa_online') {
                 status = 'telat';
-                if (selisihHari < 0) {
-                    labelHari = `Telat ${Math.abs(selisihHari)} Hari (Override Admin)`;
-                } else {
-                    labelHari = `${selisihHari} Hari Lagi (Override Admin)`;
-                }
+                labelHari = selisihHari < 0 ? `Telat ${Math.abs(selisihHari)} Hari (Override)` : `${selisihHari} Hari Lagi (Override)`;
             } else if (member.statusCustom === 'paksa_offline') {
                 status = 'nonaktif';
-                labelHari = 'Blokir (Dipaksa Admin)';
+                labelHari = 'Blokir (Admin)';
+            } else if (selisihHari < 0) {
+                if (Math.abs(selisihHari) <= 30) {
+                    status = 'telat';
+                    labelHari = `Telat ${Math.abs(selisihHari)} Hari`;
+                } else {
+                    status = 'nonaktif';
+                    labelHari = 'Blokir (Isolir)';
+                }
+            }
+            
+            let matchStatus = false;
+            if (currentAdminFilter === 'semua') {
+                matchStatus = true;
+            } else if (currentAdminFilter === 'belum_bayar') {
+                let totalBulanTagihan = (mTahun * 12) + mBulan;
+                let totalBulanSekarang = (hariIni.getFullYear() * 12) + (hariIni.getMonth() + 1);
+                let belumLunasBulanIni = (totalBulanTagihan <= totalBulanSekarang);
+                matchStatus = (belumLunasBulanIni && status !== 'nonaktif') || (status === 'telat' || member.statusCustom === 'paksa_online');
+            } else if (currentAdminFilter === 'sudah_bayar') {
+                let totalBulanTagihan = (mTahun * 12) + mBulan;
+                let totalBulanSekarang = (hariIni.getFullYear() * 12) + (hariIni.getMonth() + 1);
+                matchStatus = ((totalBulanTagihan > totalBulanSekarang && member.statusCustom !== 'paksa_offline') || member.statusCustom === 'bayar_atasan');
+            } else {
+                matchStatus = (status === currentAdminFilter);
             }
 
-            const matchStatus = (currentAdminFilter === 'semua' || status === currentAdminFilter);
             const matchSearch = (!search || member.name.toLowerCase().includes(search) || member.alamat.toLowerCase().includes(search) || (member.id && member.id.toLowerCase().includes(search)));
 
             if (matchStatus && matchSearch) {
@@ -420,42 +804,25 @@
         let editIndex = parseInt(document.getElementById('editIndex').value);
 
         if (!id || !name || !alamat) { 
-            showToast("⚠️ Data utama (ID, Nama, Alamat) wajib diisi!"); 
+            showToast("⚠️ Data utama wajib diisi!"); 
             return; 
         }
 
         let members = getMembersData();
-
         if (editIndex === -1) {
-            let isDuplicate = members.some(m => 
-                m.id.trim().toUpperCase() === id.toUpperCase() && 
-                m.name.trim().toUpperCase() === name && 
-                m.alamat.trim().toLowerCase() === alamat.toLowerCase()
-            );
-            if (isDuplicate) {
-                showToast(`⚠️ Gagal: Member "${name}" (${id}) sudah ada!`);
-                return;
-            }
+            let isDuplicate = members.some(m => m.id.toUpperCase() === id.toUpperCase() && m.name === name && m.alamat.toLowerCase() === alamat.toLowerCase());
+            if (isDuplicate) { showToast(`⚠️ Gagal: Member "${name}" sudah ada!`); return; }
         }
 
         let newData = { id, name, paket, harga, wa, alamat, bulanTagihan, tahunTagihan, statusCustom };
-        if (editIndex === -1) {
-            members.push(newData);
-        } else {
-            members[editIndex] = newData;
-        }
+        if (editIndex === -1) members.push(newData);
+        else members[editIndex] = newData;
 
-        localStorage.setItem('jegeg_json_kalimojo', JSON.stringify(members));
-        
-        let customBayarLink = document.getElementById('adminBayarLink').value.trim() || "https://vpayndo.blogspot.com/p/pembayaran-tagihan.html";
-        let customAktifLink = document.getElementById('adminAktifLink').value.trim() || "https://vpayndo.blogspot.com/p/daftar-pelanggan-internet-area-kalimojo.html";
-        localStorage.setItem('jegeg_bayar_link', customBayarLink);
-        localStorage.setItem('jegeg_aktif_link', customAktifLink);
-
+        saveMembersData(members);
         syncKeGoogleSheets();
         resetFormAdmin(); 
         renderAdminTable(); 
-        showToast("💾 Data Berhasil Disimpan Tanpa Dobel!");
+        showToast("💾 Data Berhasil Disimpan!");
     }
 
     function editMember(index) {
@@ -470,14 +837,8 @@
         document.getElementById('memberTahun').value = m.tahunTagihan;
         document.getElementById('memberStatusCustom').value = m.statusCustom || 'normal';
 
-        let savedBayarLink = localStorage.getItem('jegeg_bayar_link') || "https://bayar-jegegnet-online.netlify.app/";
-        let savedAktifLink = localStorage.getItem('jegeg_aktif_link') || "https://jegegnet-masaaktif-kalimojo.netlify.app/";
-        document.getElementById('adminBayarLink').value = savedBayarLink;
-        document.getElementById('adminAktifLink').value = savedAktifLink;
-
         document.getElementById('editIndex').value = index;
         document.getElementById('form-title').innerText = "Edit Data Member";
-        
         document.getElementById('form-wrapper').style.display = 'block';
         document.getElementById('btn-toggle-form').style.display = 'none';
         document.getElementById('form-title').scrollIntoView({ behavior: 'smooth' });
@@ -485,9 +846,8 @@
 
     function deleteMember(index) {
         let members = getMembersData();
-        let target = members[index];
         deleteTargetIndex = index;
-        document.getElementById('confirm-modal-desc').innerText = `Apakah Anda yakin ingin menghapus member "${target.name}" (${target.id})?`;
+        document.getElementById('confirm-modal-desc').innerText = `Apakah Anda yakin ingin menghapus member "${members[index].name}"?`;
         document.getElementById('confirm-modal').style.display = 'flex';
     }
 
@@ -496,10 +856,10 @@
         if (isYes && deleteTargetIndex !== -1) {
             let members = getMembersData();
             members.splice(deleteTargetIndex, 1);
-            localStorage.setItem('jegeg_json_kalimojo', JSON.stringify(members));
+            saveMembersData(members);
             syncKeGoogleSheets();
             renderAdminTable(); 
-            showToast("️Data Berhasil Dihapus!");
+            showToast("🗑️ Data Berhasil Dihapus!");
         }
         deleteTargetIndex = -1;
     }
@@ -511,7 +871,6 @@
         document.getElementById('editIndex').value = '-1';
         document.getElementById('memberStatusCustom').value = 'normal';
         document.getElementById('form-title').innerText = "Kelola Member G-ACCESS";
-        
         document.getElementById('form-wrapper').style.display = 'none';
         document.getElementById('btn-toggle-form').style.display = 'flex';
     }
@@ -534,37 +893,21 @@
         let m = members[index];
         activePaymentIndex = index;
         globalActiveIndex = index;
-        
         let jmlTunggakan = hitungTunggakan(m);
         
-        document.getElementById('payment-modal-desc').innerHTML = `Pelanggan: <b>${m.name}</b><br>Rekomendasi tunggakan berjalan: <b style="color: #26c6da;">${jmlTunggakan} Bulan</b>`;
+        document.getElementById('payment-modal-desc').innerHTML = `Pelanggan: <b>${m.name}</b><br>Rekomendasi tunggakan: <b style="color: #26c6da;">${jmlTunggakan} Bulan</b>`;
         document.getElementById('payment-modal-input').value = jmlTunggakan;
-        
         document.getElementById('payment-modal').style.display = 'flex';
-        setTimeout(() => {
-            let inp = document.getElementById('payment-modal-input');
-            inp.focus();
-            inp.select();
-        }, 100);
+        setTimeout(() => { let inp = document.getElementById('payment-modal-input'); inp.focus(); inp.select(); }, 100);
     }
 
     function tutupPaymentModal(isConfirm) {
         let modal = document.getElementById('payment-modal');
         modal.style.display = 'none';
-        
-        if (!isConfirm || activePaymentIndex === -1) {
-            activePaymentIndex = -1;
-            return;
-        }
+        if (!isConfirm || activePaymentIndex === -1) { activePaymentIndex = -1; return; }
 
-        let inputVal = document.getElementById('payment-modal-input').value.trim();
-        let jmlBayarBulan = parseInt(inputVal);
-        
-        if (isNaN(jmlBayarBulan) || jmlBayarBulan < 1) {
-            showToast("⚠️ Jumlah bulan tidak valid!");
-            activePaymentIndex = -1;
-            return;
-        }
+        let jmlBayarBulan = parseInt(document.getElementById('payment-modal-input').value.trim());
+        if (isNaN(jmlBayarBulan) || jmlBayarBulan < 1) { showToast("⚠️ Jumlah bulan tidak valid!"); activePaymentIndex = -1; return; }
 
         let members = getMembersData();
         let m = members[activePaymentIndex];
@@ -572,12 +915,10 @@
         
         let hargaSatuan = m.harga ? parseInt(m.harga) : 110000;
         let totalBayar = jmlBayarBulan * hargaSatuan;
-        
         let bulanLunasAngka = parseInt(m.bulanTagihan);
         let tahunLunasAngka = parseInt(m.tahunTagihan);
         
         const namaBulanArr = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-        
         let periodeLunasTeks = `${namaBulanArr[bulanLunasAngka]} ${tahunLunasAngka}`;
         if (jmlBayarBulan > 1) {
             let totalAkhirBulan = (tahunLunasAngka * 12) + bulanLunasAngka + jmlBayarBulan - 1;
@@ -593,13 +934,11 @@
         m.bulanTagihan = newTotalBulan % 12 || 12;
         if (m.bulanTagihan === 12 && newTotalBulan % 12 !== 0) m.tahunTagihan -= 1;
         
-        localStorage.setItem('jegeg_json_kalimojo', JSON.stringify(members));
+        saveMembersData(members);
         syncKeGoogleSheets();
         
         let jatuhTempoBerikutnyaTeks = `${namaBulanArr[parseInt(m.bulanTagihan)]} ${m.tahunTagihan}`;
-        let tglSekarang = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-        
-        let linkAktifStruk = localStorage.getItem('jegeg_aktif_link') || "https://vpayndo.blogspot.com/p/daftar-pelanggan-internet-area-kalimojo.html";
+        let linkAktifStruk = getConfig('aktifLink');
 
         let pesanLunas = `*BUKTI PEMBAYARAN BERHASIL*
 *G-ACCESS INTERNET*
@@ -616,8 +955,10 @@ Rincian Transaksi:
 - Periode Lunas: *${periodeLunasTeks}*
 - Periode Bayar: ${jmlBayarBulan} Bulan
 - Nominal Bayar: *Rp ${totalBayar.toLocaleString('id-ID')}*
-- Tagihan berikutnya jatuh tempo pada: ${jatuhTempoBerikutnyaTeks}
+- Status: *LUNAS*
 ----------------------------------------
+Tagihan berikutnya akan jatuh tempo pada periode: ${jatuhTempoBerikutnyaTeks}
+
 Cek Masa Aktif Paket:
 ${linkAktifStruk}
 
@@ -637,8 +978,8 @@ _Terima kasih telah berlangganan di G-ACCESS!_`;
         globalActiveIndex = index;
         globalActiveWa = m.wa ? m.wa.toString().trim() : '';
 
-        let linkBayarStruk = localStorage.getItem('jegeg_bayar_link') || "https://vpayndo.blogspot.com/p/pembayaran-tagihan.html";
-
+        let linkBayarStruk = getConfig('bayarLink');
+        let tglTempoNum = getConfig('jatuhTempo');
         document.getElementById('rawbtPrintRow').style.display = 'block';
 
         let jml = hitungTunggakan(m);
@@ -648,21 +989,23 @@ _Terima kasih telah berlangganan di G-ACCESS!_`;
         const namaBulanArr = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         let periodeTeks = `${namaBulanArr[parseInt(m.bulanTagihan)]} ${m.tahunTagihan}`;
 
-        let pesanTagihan = `*INFORMASI TAGIHAN INTERNET G-ACCESS*
-----------------------------------------
+        let pesanTagihan = `*INFORMASI TAGIHAN G-ACCESS*
+--------------------------------
 Yth. Bpk/Ibu: *${m.name}*
 ID: (${m.id})
 Alamat: ${m.alamat}
-----------------------------------------
+--------------------------------
 Detail Tagihan:
 - Paket: ${m.paket}
 - Periode: ${periodeTeks}
 - Jumlah Tunggakan: ${jml} Bulan
 - Total Tagihan: *Rp ${totalTagihan.toLocaleString('id-ID')}*
-----------------------------------------
-[ ! ] Batas Pembayaran: Tanggal 20 Setiap Bulan
+--------------------------------
+[ ! ] Batas Pembayaran: 
+Tanggal ${tglTempoNum} Setiap Bulan
 
-Silakan melakukan pembayaran CASH ke Admin Area atau melalui link Online Resmi:
+Silakan bayar CASH ke Admin 
+atau melalui link Online resmi:
 ${linkBayarStruk}
 
 _Terima kasih telah menggunakan layanan G-ACCESS_`;
@@ -675,11 +1018,10 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
     function kirimKeWaFinal() {
         let members = getMembersData();
         if (globalActiveIndex !== -1 && members[globalActiveIndex]) {
-            let activeMember = members[globalActiveIndex];
-            globalActiveWa = activeMember.wa ? activeMember.wa.toString().trim() : '';
+            globalActiveWa = members[globalActiveIndex].wa ? members[globalActiveIndex].wa.toString().trim() : '';
         }
 
-        if (!globalActiveWa || globalActiveWa === "" || globalActiveWa.length < 5) {
+        if (!globalActiveWa || globalActiveWa.length < 5) {
             document.getElementById('preview-modal').style.display = 'none';
             document.getElementById('custom-modal-input').value = "62";
             document.getElementById('custom-input-modal').style.display = 'flex';
@@ -699,18 +1041,15 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
         
         if (isConfirm && inputVal && inputVal !== "62" && inputVal.length > 3) {
             let members = getMembersData();
-            
             if (globalActiveIndex !== -1 && members[globalActiveIndex]) {
                 members[globalActiveIndex].wa = inputVal;
-                localStorage.setItem('jegeg_json_kalimojo', JSON.stringify(members));
+                saveMembersData(members);
                 syncKeGoogleSheets();
                 renderAdminTable();
                 showToast("✅ Nomor WA berhasil disimpan!");
             }
-            
             let teksFinal = document.getElementById('previewText').value;
-            let urlWa = `https://wa.me/${inputVal}?text=` + encodeURIComponent(teksFinal);
-            window.location.href = urlWa;
+            window.location.href = `https://wa.me/${inputVal}?text=` + encodeURIComponent(teksFinal);
             tutupModalStruk();
         } else if (isConfirm) {
             showToast("⚠️ Masukkan nomor WhatsApp dengan benar.");
@@ -722,8 +1061,7 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
 
     function tutupModalStruk() { 
         document.getElementById('preview-modal').style.display = 'none'; 
-        activePaymentIndex = -1;
-        globalActiveIndex = -1;
+        activePaymentIndex = -1; globalActiveIndex = -1;
     }
 
     function bukaUrlWa(teksFinal) {
@@ -732,60 +1070,60 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
         tutupModalStruk();
     }
 
+    // --- FUNGSI CETAK RAWBT UTUH SEPERTI SEMULA ---
     function cetakKeRawBT() {
         let teksStruk = document.getElementById('previewText').value;
-        if (!teksStruk) {
-            showToast("⚠️ Tidak ada teks struk.");
-            return;
-        }
+        if (!teksStruk) { showToast("⚠️ Tidak ada teks struk."); return; }
 
-        let bersihTeks = teksStruk.replace(/\*/g, '');
-        bersihTeks = bersihTeks.replace(/_/g, '');
+        let bersihTeks = teksStruk.replace(/\*/g, '').replace(/_/g, '');
+        let tglTempoNum = getConfig('jatuhTempo') || 20;
+        let waKonfirmasiNum = getConfig('waKonfirmasi') || "083845002120";
 
-        bersihTeks = bersihTeks.replace(/Batas Pembayaran: Tanggal 20 Setiap Bulan/g, "Batas Pembayaran: Tanggal 20 Setiap Bulan\n(KONFIRMASI: 083845002120)\n");
+        bersihTeks = bersihTeks.replace(new RegExp(`Tanggal ${tglTempoNum} Setiap Bulan`, 'g'), `Tanggal ${tglTempoNum} Setiap Bulan\n(KONFIRMASI: ${waKonfirmasiNum})\n`);
 
-        let linkOnline = localStorage.getItem('jegeg_bayar_link') || "https://vpayndo.blogspot.com/p/pembayaran-tagihan.html";
+        let linkOnline = getConfig('bayarLink');
         let infoPembayaran = "Silakan melakukan pembayaran CASH ke Admin Area atau melalui link bayar online resmi kami:\n" + linkOnline;
-        bersihTeks = bersihTeks.replace(/Silakan melakukan pembayaran[\s\S]*?vpayndo\.blogspot\.com\/p\/pembayaran-tagihan\.html/g, infoPembayaran);
+        bersihTeks = bersihTeks.replace(/Silakan melakukan pembayaran[\s\S]*?(\bhttps?:\/\/\S+)/g, infoPembayaran);
 
         let headerStruk = 
-              "\x1B\x61\x01" + 
-              "================================\n" +
-              "\x1B\x21\x30" +
-              " G-ACCESS \n" +
-              "\x1B\x21\x00" +
-              "   High Speed Internet Service  \n" +
-              "================================\n" +
-              "\x1B\x61\x00";
+            "\x1B\x61\x01" + "================================\n" +
+            "\x1B\x21\x30" + "G-ACCESS\n" +
+            "\x1B\x21\x00" + "High Speed Internet Service\n" +
+            "================================\n" +
+            "\x1B\x61\x00";
 
-        let footerStruk = "\n--------------------------------\n" + 
-                          "\x1B\x61\x01" + 
-                          "\x1B\x21\x01" + 
-                          "Powered: PT. GAIATRI LINTAS NUSANTARA" + 
-                          "\x1B\x21\x00" + 
-                          "\x1B\x61\x00";
-
-        let finalStruk = headerStruk + bersihTeks + footerStruk;
+        let footerStruk = 
+            "\n--------------------------------\n" +
+            "\x1B\x61\x01" + 
+            "\x1B\x21\x01" + 
+            "Powered: PT. GAIATRI LINTAS NUSANTARA\n\n\n" +
+            "\x1B\x21\x00" + 
+            "\x1B\x61\x00";
         
-        finalStruk = finalStruk.replace(/STRUK TAGIHAN INTERNET G-ACCESS/g, '\x1B\x45\x01STRUK TAGIHAN INTERNET G-ACCESS\x1B\x45\x00');
+        let finalStruk = headerStruk + bersihTeks + footerStruk;
+
+        finalStruk = finalStruk.replace(/INFORMASI TAGIHAN G-ACCESS/g, '\x1B\x45\x01INFORMASI TAGIHAN G-ACCESS\x1B\x45\x00');
+        finalStruk = finalStruk.replace(/BUKTI PEMBAYARAN BERHASIL/g, '\x1B\x45\x01BUKTI PEMBAYARAN BERHASIL\x1B\x45\x00');
         finalStruk = finalStruk.replace(/(Yth\. Bpk\/Ibu:\s+)([^\n]+)/gi, '$1\x1B\x45\x01$2\x1B\x45\x00');
         finalStruk = finalStruk.replace(/(ID:\s+)([^\n]+)/gi, '$1\x1B\x45\x01$2\x1B\x45\x00');
-        finalStruk = finalStruk.replace(/(Terima kasih telah menggunakan layanan G\-ACCESS[^]*)/gi, '\x1B\x34\x01$1\x1B\x34\x00');
 
-        window.location.href = "rawbt:" + encodeURIComponent(finalStruk);
+        var base64Data = btoa(unescape(encodeURIComponent(finalStruk)));
+        window.location.href = "rawbt:base64," + base64Data;
     }
 
     function syncKeGoogleSheets() {
         let members = getMembersData();
+        let targetUrl = getConfig('webUrl');
         showToast("Menyinkronkan ke server...");
-        fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(members) })
+        fetch(targetUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(members) })
         .then(() => showToast("✅ Berhasil Disinkronkan ke Server!"))
         .catch(err => showToast("❌ Gagal sinkronisasi."));
     }
 
     function tarikDataDariGoogleSheets() {
+        let targetUrl = getConfig('webUrl');
         showToast("Menarik data dari server...");
-        fetch(WEB_APP_URL)
+        fetch(targetUrl)
         .then(response => response.json())
         .then(data => {
             if (Array.isArray(data) && data.length > 0) {
@@ -800,8 +1138,7 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
                     tahunTagihan: parseInt(item.tahunTagihan || item.TahunTagihan) || 2026,
                     statusCustom: item.statusCustom || item.StatusCustom || "normal"
                 }));
-
-                localStorage.setItem('jegeg_json_kalimojo', JSON.stringify(formattedData));
+                saveMembersData(formattedData);
                 renderAdminTable();
                 showToast("✅ Berhasil menarik " + formattedData.length + " data member!");
             } else {
@@ -822,7 +1159,95 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
         return selisih < 1 ? 1 : selisih;
     }
 
-    // Tombol Floating Scroll Naik-Turun Admin Area
+    function bukaModalLaporan() {
+        let members = getMembersData();
+        const hariIni = new Date();
+        let batasTempoTgl = getConfig('jatuhTempo') || 20;
+        
+        let totalMember = members.length;
+        let lunasCount = 0, nonaktifCount = 0, totalPemasukan = 0;
+        let listBayarAtasan = [], listBelumBayarAtasan = [];
+
+        const namaBulanArr = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        let bulanAktif = namaBulanArr[hariIni.getMonth() + 1];
+        let tahunAktif = hariIni.getFullYear();
+
+        members.forEach(member => {
+            const mBulan = parseInt(member.bulanTagihan) || 8;
+            const mTahun = parseInt(member.tahunTagihan) || 2026;
+            
+            const tanggalJatuhTempo = new Date(mTahun, mBulan - 1, batasTempoTgl);
+            const selisihWaktu = tanggalJatuhTempo - hariIni;
+            const selisihHari = Math.ceil(selisihWaktu / (1000 * 60 * 60 * 24));
+
+            let status = 'aktif';
+            if (member.statusCustom === 'paksa_online') status = 'telat';
+            else if (member.statusCustom === 'paksa_offline') status = 'nonaktif';
+            else if (selisihHari < 0) {
+                if (Math.abs(selisihHari) <= 30) status = 'telat';
+                else status = 'nonaktif';
+            }
+
+            let totalBulanTagihan = (mTahun * 12) + mBulan;
+            let totalBulanSekarang = (hariIni.getFullYear() * 12) + (hariIni.getMonth() + 1);
+            let isLunas = (totalBulanTagihan > totalBulanSekarang && member.statusCustom !== 'paksa_online') || (member.statusCustom === 'bayar_atasan');
+
+            if (isLunas) {
+                lunasCount++;
+                if (member.statusCustom === 'bayar_atasan') {
+                    listBayarAtasan.push(`- ${member.name} (${member.alamat})`);
+                } else {
+                    let harga = parseFloat(member.harga) || 110000;
+                    totalPemasukan += harga;
+                }
+            } else if (status === 'nonaktif') {
+                nonaktifCount++;
+            } else {
+                if (selisihHari < 0 || member.statusCustom === 'paksa_online') {
+                    let hariTerlambat = Math.abs(selisihHari);
+                    listBelumBayarAtasan.push(`- ${member.name} (${member.alamat}) [Telat ${hariTerlambat} Hari]`);
+                }
+            }
+        });
+
+        let belumBayarCount = listBelumBayarAtasan.length;
+        let rincianAtasanTeks = "";
+        if (listBayarAtasan.length > 0) {
+            rincianAtasanTeks = `*Bayar Langsung ke Atasan (${listBayarAtasan.length} Orang):*\n` + listBayarAtasan.join("\n") + `\n----------------------------------------\n`;
+        }
+
+        let rincianBelumBayarTeks = "";
+        if (listBelumBayarAtasan.length > 0) {
+            rincianBelumBayarTeks = `*Daftar Telat Bayar (${listBelumBayarAtasan.length} Orang):*\n` + listBelumBayarAtasan.join("\n") + `\n----------------------------------------\n`;
+        }
+
+        let linkPublik = getConfig('aktifLink');
+        let teksLaporan = `*LAPORAN REKAPITULASI G-ACCESS*
+Periode: ${bulanAktif} ${tahunAktif}
+Area: ${activeArea.toUpperCase()}
+----------------------------------------
+- Total Member: *${totalMember}*
+- Sudah Lunas: *${lunasCount} Member*
+- Belum Bayar/Telat: *${belumBayarCount} Pelanggan*
+- Off / Isolir (Nonaktif): *${nonaktifCount} Pelanggan*
+----------------------------------------
+${rincianAtasanTeks}${rincianBelumBayarTeks}Total Estimasi Setoran: 
+*Rp ${totalPemasukan.toLocaleString('id-ID')}*
+----------------------------------------
+🔗 *Cek Data Publik Pelanggan:*
+${linkPublik}
+----------------------------------------
+_Laporan Otomatis Sistem G-ACCESS_`;
+
+        document.getElementById('laporanText').value = teksLaporan;
+        document.getElementById('laporan-modal').style.display = 'flex';
+    }
+
+    function kirimLaporanWa() {
+        let teks = document.getElementById('laporanText').value;
+        window.open(`https://wa.me/?text=` + encodeURIComponent(teks), '_blank');
+    }
+
     let adminScrollArea = document.getElementById('adminScrollArea');
     if (adminScrollArea) {
         adminScrollArea.addEventListener('scroll', function() {
@@ -832,6 +1257,22 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
                 else floatingBtn.classList.remove('show');
             }
         });
+    }
+
+    let lastScrollTop = 0;
+    const scrollArea = document.getElementById('adminScrollArea');
+    const statBox = document.getElementById('statBoxContainer');
+
+    if (scrollArea && statBox) {
+        scrollArea.addEventListener('scroll', function() {
+            let scrollTop = scrollArea.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 30) {
+                statBox.classList.add('hidden');
+            } else {
+                statBox.classList.remove('hidden');
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }, false);
     }
 </script>
 </body>
