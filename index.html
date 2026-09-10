@@ -1161,7 +1161,7 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
 
   bersihTeks = bersihTeks
             .replace(new RegExp(`Batas Pembayaran Tanggal ${tglTempoNum} Setiap Bulan`, 'g'), 
-                     `Batas Pembayaran Tanggal ${tglTempoNum} Setiap Bulan\n(KONFIRMASI: ${waKonfirmasiNum})`
+                     `Batas Pembayaran Tanggal\n ${tglTempoNum} Setiap Bulan\n(KONFIRMASI: ${waKonfirmasiNum})`
             );
 
         let linkOnline = getConfig('bayarLink');
