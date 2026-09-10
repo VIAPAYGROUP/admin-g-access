@@ -7,7 +7,29 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
         body { background-color: #03121e; color: #ffffff; padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        
+   
+           .logo-container-flex { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; perspective: 1000px; }
+        .side-icon-left { width: 35px; height: auto; object-fit: contain; animation: mirrorFlipLeft 3s ease-in-out infinite; transform-style: preserve-3d; }
+        .side-icon-right { width: 40px; height: auto; object-fit: contain; animation: mirrorFlipRight 3s ease-in-out infinite; transform-style: preserve-3d; }
+        @keyframes mirrorFlipLeft { 0%, 100% { transform: rotateY(0deg); } 50% { transform: rotateY(180deg); } }
+        @keyframes mirrorFlipRight { 0%, 100% { transform: rotateY(0deg); } 50% { transform: rotateY(-180deg); } }
+
+        .logo-wrapper {
+            position: relative; width: 140px; height: 55px; display: flex; align-items: center; justify-content: center;
+            border-radius: 10px; overflow: hidden; border: 1px solid rgba(38, 198, 218, 0.4); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .logo-bg-dynamic {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(120deg, #ffffff, #b3e5fc, #c8e6c9, #fff9c4, #f8bbd0, #ffffff);
+            background-size: 400% 400%; animation: colorShiftSlow 10s ease infinite; z-index: 1;
+        }
+        .header-logo {
+            position: relative; width: 125px; height: auto; object-fit: contain; z-index: 3;
+            animation: logoZoomPulse 2.5s ease-in-out infinite; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+        }
+        @keyframes colorShiftSlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes logoZoomPulse { 0%, 100% { transform: scale(0.85); } 50% { transform: scale(1.00); } }
+
         .admin-container { 
             width: 100%; max-width: 480px; background: linear-gradient(145deg, #041a2c, #03121e); 
             padding: 20px 16px; border-radius: 20px; border: 1px solid rgba(38, 198, 218, 0.3); 
@@ -155,8 +177,8 @@
 <!-- MODAL KONFIGURASI MASTER AREA (CLOUD) -->
 <div id="master-config-modal">
     <div class="admin-box-modal" style="max-width: 450px;">
-        <h3 style="color: #e67e22;">⚙️ Konfigurasi Master Area (Cloud)</h3>
-        <p style="font-size: 11px; color: #a0aec0; margin-bottom: 12px; text-align: center;">Tambah atau ubah wilayah yang otomatis tersinkron ke semua perangkat.</p>
+        <h3 style="color: #e67e22;">⚙️ Konfigurasi Master Area</h3>
+        <p style="font-size: 11px; color: #a0aec0; margin-bottom: 12px; text-align: center;">Tambah atau ubah data Admin area.</p>
         
         <div style="display: flex; gap: 6px; margin-bottom: 10px;">
             <select id="configTargetArea" onchange="loadConfigData(this.value)" style="flex: 1; margin-bottom: 0;"></select>
@@ -165,6 +187,8 @@
         </div>
 
         <div><label>Nama Tampilan Wilayah</label><input type="text" id="cfgAreaName"></div>
+  <!-- Di dalam modal master-config-modal -->
+<div><label>ID Wilayah (Unik, Tanpa Spasi)</label><input type="text" id="cfgAreaKeyId" placeholder="misal: kalimojo" style="text-transform: lowercase;"></div>
         <div class="grid-2">
             <div><label>Username Admin</label><input type="text" id="cfgUsername"></div>
             <div><label>Password Admin</label><input type="text" id="cfgPassword"></div>
@@ -177,9 +201,12 @@
         <div><label>Link Pembayaran Online</label><input type="text" id="cfgBayarLink"></div>
         <div><label>Link Masa Aktif Publik</label><input type="text" id="cfgAktifLink"></div>
 
+        <!-- Tombol Tambahan untuk Menarik Data Registry dari Cloud -->
         <div style="display: flex; gap: 8px; margin-top: 10px;">
-            <button class="btn-modern" style="background: #2ecc71; color: #fff;" onclick="simpanMasterConfig()">💾 Simpan & Sync ke Cloud</button>
-            <button class="btn-modern" style="background: #7f8c8d; color: #fff;" onclick="document.getElementById('master-config-modal').style.display='none'">Tutup</button>
+            <button class="btn-modern" style="background: #2ecc71; color: #fff; flex: 2;" onclick="simpanMasterConfig()">💾 Simpan & Sync ke Cloud</button>
+            <button class="btn-modern" style="background: #3498db; color: #fff; flex: 1;" onclick="tarikMasterDariCloudManual()">📥 Tarik Data</button>
+        </div>
+        <button class="btn-modern" style="background: #7f8c8d; color: #fff; margin-top: 6px;" onclick="document.getElementById('master-config-modal').style.display='none'">Tutup</button>
         </div>
     </div>
 </div>
@@ -188,8 +215,8 @@
 <div id="new-area-modal">
     <div class="custom-modal-box">
         <h3 style="color: #26c6da; text-align: center; margin-bottom: 10px;">➕ Tambah Wilayah Baru</h3>
-        <div><label>ID Wilayah (tanpa spasi, misal: gombang)</label><input type="text" id="newAreaKey" placeholder="gombang"></div>
-        <div><label>Nama Area</label><input type="text" id="newAreaName" placeholder="Area Gombang"></div>
+        <div><label>ID Wilayah (tanpa spasi, misal: KALIMOJO)</label><input type="text" id="newAreaKey" placeholder=""></div>
+        <div><label>Nama Area</label><input type="text" id="newAreaName" placeholder="Area KaliMojo"></div>
         <div><label>Link Web App Google Sheets</label><input type="text" id="newAreaWebUrl" placeholder="https://script.google.com/..."></div>
         <div style="display: flex; gap: 8px; margin-top: 10px;">
             <button class="btn-modern" style="background: #2ecc71; color: #fff;" onclick="prosesSimpanAreaBaru()">Simpan</button>
@@ -268,15 +295,30 @@
 <div class="admin-container">
     <!-- HALAMAN LOGIN -->
     <div id="loginSection">
-        <h3>🔐 Login Akses Admin</h3>
-        <div style="margin-top: 10px;">
-            <label>Pilih Wilayah / Area</label>
-            <select id="loginAreaSelect"></select>
+        
+        <!-- LOGO HEADER -->
+        <div class="logo-container-flex" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 12px; perspective: 1000px;">
+            <img src="https://raw.githubusercontent.com/VIAPAYGROUP/Hosting-Web/refs/heads/main/20240705_201320.png" class="side-icon-left" alt="Icon Kiri">
+            <div class="logo-wrapper">
+                <div class="logo-bg-dynamic"></div>
+                <img src="https://raw.githubusercontent.com/VIAPAYGROUP/Hosting-Web/refs/heads/main/Logo%20G-Acces%20Pacitan_20260814_195519_0000.png" class="header-logo" alt="Logo">
+            </div>
+            <img src="https://raw.githubusercontent.com/VIAPAYGROUP/Hosting-Web/refs/heads/main/IMG_20260729_012847.png" class="side-icon-right" alt="Icon Kanan">
         </div>
+
+        <h3>🔐 Login Akses Admin</h3>
+        
+        <!-- DIUBAH MENJADI INPUT TEKS ID WILAYAH -->
+  <div style="margin-top: 10px;">
+    <label>ID Wilayah / Area</label>
+    <input type="text" id="adminAreaKeyInput" placeholder="Contoh: JATIM86" oninput="this.value = this.value.toUpperCase()" style="text-transform: uppercase; font-weight: bold; color: #26c6da;">
+</div>
+        
         <div><label>Username</label><input type="text" id="adminUser" placeholder="Masukkan Username..."></div>
         <div><label>Password</label><input type="password" id="adminPass" placeholder="Masukkan Password..."></div>
         <button class="btn-modern" style="background: #26c6da; color: #041a2c;" onclick="prosesLoginAdmin()">Masuk Panel</button>
     </div>
+
 
     <!-- HALAMAN PANEL KELOLA MEMBER -->
     <div id="panelSection" style="display: none; height: 100%; flex-direction: column;">
@@ -516,19 +558,28 @@
         localStorage.setItem(`members_data_${activeArea}`, JSON.stringify(data));
     }
 
-    function prosesLoginAdmin() {
-        let areaSelect = document.getElementById('loginAreaSelect').value;
-        if (!areaSelect) {
-            showToast("⚠️ Silakan pilih wilayah terlebih dahulu!");
-            return;
-        }
-        activeArea = areaSelect;
-
+        function prosesLoginAdmin() {
+        // Otomatis ubah inputan kapital dari admin ke huruf kecil untuk dicocokkan dengan data sistem
+        let areaKey = document.getElementById('adminAreaKeyInput').value.trim().toLowerCase().replace(/\s+/g, '');
         let user = document.getElementById('adminUser').value.trim();
         let pass = document.getElementById('adminPass').value.trim();
         
-        let correctUser = getConfig('user') || "Admin";
-        let correctPass = getConfig('pass') || "admin123";
+        if (!areaKey) {
+            showToast("⚠️ Masukkan ID Wilayah terlebih dahulu!");
+            return;
+        }
+
+        let areas = getAreasList();
+        
+        if (!areas[areaKey]) {
+            showToast("⚠️ ID Wilayah \"" + document.getElementById('adminAreaKeyInput').value + "\" tidak ditemukan!");
+            return;
+        }
+
+        activeArea = areaKey;
+        
+        let correctUser = areas[areaKey].user || "Admin";
+        let correctPass = areas[areaKey].pass || "admin123";
 
         if (user === correctUser && pass === correctPass) {
             document.getElementById('loginSection').style.display = 'none';
@@ -539,7 +590,7 @@
             container.style.justifyContent = "flex-start";
 
             renderAdminTable();
-            showToast("✨ Login Admin Berhasil!");
+            showToast("✨ Login Admin " + areas[areaKey].name + " Berhasil!");
         } else { 
             showToast("⚠️ Username atau Password salah!"); 
         }
@@ -567,10 +618,14 @@
         }
     }
 
-    function loadConfigData(areaKey) {
+        function loadConfigData(areaKey) {
         let areas = getAreasList();
         let cfg = areas[areaKey];
         if (!cfg) return;
+        
+        // Tambahkan baris ini untuk mengisi kotak ID Wilayah
+        document.getElementById('cfgAreaKeyId').value = areaKey;
+        
         document.getElementById('cfgAreaName').value = cfg.name || "";
         document.getElementById('cfgUsername').value = cfg.user || "Admin";
         document.getElementById('cfgPassword').value = cfg.pass || "admin123";
@@ -581,24 +636,51 @@
         document.getElementById('cfgAktifLink').value = cfg.aktifLink || "";
     }
 
-    function simpanMasterConfig() {
-        let areaKey = document.getElementById('configTargetArea').value;
-        let areas = getAreasList();
-        if (areas[areaKey]) {
-            areas[areaKey].name = document.getElementById('cfgAreaName').value.trim();
-            areas[areaKey].user = document.getElementById('cfgUsername').value.trim() || "Admin";
-            areas[areaKey].pass = document.getElementById('cfgPassword').value.trim() || "admin123";
-            areas[areaKey].webUrl = document.getElementById('cfgWebUrl').value.trim();
-            areas[areaKey].jatuhTempo = parseInt(document.getElementById('cfgJatuhTempo').value) || 20;
-            areas[areaKey].waKonfirmasi = document.getElementById('cfgWaKonfirmasi').value.trim();
-            areas[areaKey].bayarLink = document.getElementById('cfgBayarLink').value.trim();
-            areas[areaKey].aktifLink = document.getElementById('cfgAktifLink').value.trim();
-
-            saveAreasListToCloud(areas);
-            initAreaDropdowns();
-            document.getElementById('configTargetArea').value = areaKey;
-            showToast("✅ Konfigurasi Disimpan & Disinkronkan ke Cloud!");
+        function simpanMasterConfig() {
+        let oldAreaKey = document.getElementById('configTargetArea').value;
+        let newAreaKey = document.getElementById('cfgAreaKeyId').value.trim().toLowerCase().replace(/\s+/g, '');
+        
+        if (!newAreaKey) {
+            showToast("⚠️ ID Wilayah tidak boleh kosong!");
+            return;
         }
+
+        let areas = getAreasList();
+
+        // Ambil konfigurasi lama
+        let currentConfig = areas[oldAreaKey] || {};
+
+        // Perbarui nilainya dengan data dari form input
+        currentConfig.name = document.getElementById('cfgAreaName').value.trim();
+        currentConfig.user = document.getElementById('cfgUsername').value.trim() || "Admin";
+        currentConfig.pass = document.getElementById('cfgPassword').value.trim() || "admin123";
+        currentConfig.webUrl = document.getElementById('cfgWebUrl').value.trim();
+        currentConfig.jatuhTempo = parseInt(document.getElementById('cfgJatuhTempo').value) || 20;
+        currentConfig.waKonfirmasi = document.getElementById('cfgWaKonfirmasi').value.trim();
+        currentConfig.bayarLink = document.getElementById('cfgBayarLink').value.trim();
+        currentConfig.aktifLink = document.getElementById('cfgAktifLink').value.trim();
+
+        // Jika ID wilayah diubah, pindahkan data member lokal dan hapus key lama
+        if (oldAreaKey !== newAreaKey) {
+            let oldStorageKey = `members_data_${oldAreaKey}`;
+            let newStorageKey = `members_data_${newAreaKey}`;
+            let existingData = localStorage.getItem(oldStorageKey);
+            
+            if (existingData) {
+                localStorage.setItem(newStorageKey, existingData);
+                localStorage.removeItem(oldStorageKey);
+            }
+            
+            delete areas[oldAreaKey];
+        }
+
+        // Simpan dengan ID yang baru (atau ID yang tetap)
+        areas[newAreaKey] = currentConfig;
+
+        saveAreasListToCloud(areas);
+        initAreaDropdowns();
+        document.getElementById('configTargetArea').value = newAreaKey;
+        showToast("✅ Konfigurasi & ID Wilayah Berhasil Diperbarui!");
     }
 
     function bukaModalTambahArea() {
@@ -1000,8 +1082,7 @@ Detail Tagihan:
 - Jumlah Tunggakan: ${jml} Bulan
 - Total Tagihan: *Rp ${totalTagihan.toLocaleString('id-ID')}*
 --------------------------------
-[ ! ] Batas Pembayaran: 
-Tanggal ${tglTempoNum} Setiap Bulan
+[ ! ] Batas Pembayaran Tanggal ${tglTempoNum} Setiap Bulan
 
 Silakan bayar CASH ke Admin 
 atau melalui link Online resmi:
@@ -1078,7 +1159,10 @@ _Terima kasih telah menggunakan layanan G-ACCESS_`;
         let tglTempoNum = getConfig('jatuhTempo') || 20;
         let waKonfirmasiNum = getConfig('waKonfirmasi') || "083845002120";
 
-        bersihTeks = bersihTeks.replace(new RegExp(`Tanggal ${tglTempoNum} Setiap Bulan`, 'g'), `Tanggal ${tglTempoNum} Setiap Bulan\n(KONFIRMASI: ${waKonfirmasiNum})\n`);
+  bersihTeks = bersihTeks
+            .replace(new RegExp(`Batas Pembayaran Tanggal ${tglTempoNum} Setiap Bulan`, 'g'), 
+                     `Batas Pembayaran Tanggal ${tglTempoNum} Setiap Bulan\n(KONFIRMASI: ${waKonfirmasiNum})`
+            );
 
         let linkOnline = getConfig('bayarLink');
         let infoPembayaran = "Silakan melakukan pembayaran CASH ke Admin Area atau melalui link bayar online resmi kami:\n" + linkOnline;
@@ -1274,6 +1358,62 @@ _Laporan Otomatis Sistem G-ACCESS_`;
             }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
         }, false);
+    }
+     function tarikMasterDariCloudManual() {
+        if (!MASTER_REGISTRY_URL || !MASTER_REGISTRY_URL.startsWith("http")) {
+            showToast("⚠️ URL Master Registry belum diatur!");
+            return;
+        }
+
+        showToast("📥 Menarik data master dari server...");
+        
+        fetch(MASTER_REGISTRY_URL)
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    let cloudAreas = {};
+                    data.forEach(item => {
+                        let k = item.id || item.ID;
+                        if (k) {
+                            cloudAreas[k] = {
+                                name: item.name || item.Name || "Area",
+                                webUrl: item.webUrl || item.WebUrl || "",
+                                jatuhTempo: parseInt(item.jatuhTempo || item.JatuhTempo) || 20,
+                                waKonfirmasi: item.waKonfirmasi || item.WaKonfirmasi || "",
+                                bayarLink: item.bayarLink || item.BayarLink || "",
+                                aktifLink: item.aktifLink || item.AktifLink || "",
+                                user: item.user || item.User || "Admin",
+                                pass: item.pass || item.Pass || "admin123"
+                            };
+                        }
+                    });
+                    
+                    // Simpan ke penyimpanan lokal perangkat ini
+                    localStorage.setItem('master_areas_registry_cloud', JSON.stringify(cloudAreas));
+                    
+                    // Muat ulang pilihan di dropdown master config
+                    let selConfig = document.getElementById('configTargetArea');
+                    let htmlOpts = "";
+                    for (let key in cloudAreas) {
+                        htmlOpts += `<option value="${key}">${cloudAreas[key].name}</option>`;
+                    }
+                    selConfig.innerHTML = htmlOpts;
+                    
+                    if (Object.keys(cloudAreas).length > 0) {
+                        let firstKey = Object.keys(cloudAreas)[0];
+                        selConfig.value = firstKey;
+                        loadConfigData(firstKey);
+                    }
+
+                    showToast("✅ Berhasil memperbarui daftar wilayah dari Cloud!");
+                } else {
+                    showToast("⚠️ Data master di server kosong.");
+                }
+            })
+            .catch(err => {
+                showToast("❌ Gagal menarik data master. Periksa koneksi.");
+                console.error(err);
+            });
     }
 </script>
 </body>
